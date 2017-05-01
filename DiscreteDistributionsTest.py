@@ -66,3 +66,13 @@ test(a,4,100)
 test(a, 4)
 test(a, 7)
 test(a, 10)
+
+a = createdistribution(discrete.poisson, 3)
+test(a, 0, 100)
+test(a, 0)
+test(a, 2)
+test(a, 3)
+test(a, 4)
+test(a, 5)
+test(a, 100)
+

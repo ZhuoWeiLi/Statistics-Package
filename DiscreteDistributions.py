@@ -1,4 +1,7 @@
-from math import factorial, fabs
+from math import factorial, fabs, exp
+from statistics import mean
+from random import random
+import matplotlib.pyplot as plt
 
 #Borrowed from G.Fleischer
 def C(n,k):
@@ -96,4 +99,34 @@ class discrete(object):
                 return l**a*exp(-l)/factorial(a)
             return calcprobability(x, formula)
         return distribution
+
+    def simulate(distribution, num_samples, sample_size = 1):
+        points = []
+        def generate():
+            x = 0
+            cumul_probability = 0
+            while True:
+                cumul_probability += distribution(x)
+                yield (x, cumul_probability)
+                x += 1
+        for i in range(num_samples):
+            sample = []
+            for j in range(sample_size):
+                num = random()
+                for prob_value in generate():
+                    if prob_value[1] >= num:
+                        sample.append(prob_value[0])
+                        break
+            points.append(mean(sample))
+        bins = list(range(0, round(max(points))+2))
+        if sample_size == 1:
+            plt.hist(points, bins, histtype = 'bar', align = 'left', rwidth = 0.8)
+        else:
+            plt.hist(points, bins, histtype = 'bar')
+        
+        plt.show()
+        
+
+        
+        
 
