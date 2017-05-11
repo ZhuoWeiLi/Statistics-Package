@@ -1,6 +1,5 @@
 from math import factorial, fabs, exp
-from statistics import mean
-from random import random
+from random import random, shuffle
 import matplotlib.pyplot as plt
 
 #Borrowed from G.Fleischer
@@ -29,7 +28,7 @@ def calcprobability(L, formula):
     res = 0
     for x in range(start, end+1):
         res += formula(x)
-    return round(res, 4)
+    return res
 
 class discrete(object):
 
@@ -102,29 +101,46 @@ class discrete(object):
 
     def simulate(distribution, num_samples, sample_size = 1):
         points = []
-        def generate():
-            x = 0
-            cumul_probability = 0
-            while True:
-                cumul_probability += distribution(x)
-                yield (x, cumul_probability)
-                x += 1
-        for i in range(num_samples):
-            sample = []
-            for j in range(sample_size):
-                num = random()
-                for prob_value in generate():
-                    if prob_value[1] >= num:
-                        sample.append(prob_value[0])
-                        break
-            points.append(mean(sample))
-        bins = list(range(0, round(max(points))+2))
-        if sample_size == 1:
-            plt.hist(points, bins, histtype = 'bar', align = 'left', rwidth = 0.8)
+        cache = [distribution(0)]
+        random_nums = []
+        for i in range(num_samples*sample_size):
+            random_nums.append(random())
+        random_nums.sort()
+        x = 0
+        for num in random_nums:
+            while num > cache[-1]:
+                x+= 1
+                cache.append(cache[-1] + distribution(x))
+            points.append(x)
+        if sample_size != 1:
+            samples = []
+            shuffle(points)
+            while points:
+                sample = []
+                for i in range(sample_size):
+                    sample.append(points.pop())
+                samples.append(sum(sample))
+            samples.sort()
         else:
-            plt.hist(points, bins, histtype = 'bar')
-        
+            samples = points
+
+        start = min(samples)
+        end = max(samples)
+        bins = [start]
+        interval = (end - start)//20 + 1
+        while bins[-1] < end+1:
+            current = bins[-1] + interval
+            bins.append(current)
+        print(samples)
+        print('Histogram with intervals of {} starting at {}'.format(interval, start))
+        plt.hist(samples, bins, histtype = 'bar')
         plt.show()
+        
+
+
+
+
+
         
 
         
