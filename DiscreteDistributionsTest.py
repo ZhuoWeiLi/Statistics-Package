@@ -1,4 +1,4 @@
-from DiscreteDistributions import discrete
+from Distributions import discrete
 
 distribution_counter = 0
 counter = 1
